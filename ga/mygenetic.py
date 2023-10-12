@@ -32,19 +32,22 @@ class MyGeneticAlgorithm(Algorithm):
 
     
     def evaluate(self, individual):
-
+        # Verifica se há duplicatas no indivíduo
         if len(individual) != len(set(individual)):
             return (0.0, )
-        
-        if len(list(set(individual) - set(self.all_ids))) > 0:
+    
+        # Verifica se há IDs que não estão na lista de todos os IDs
+        if any(id not in self.all_ids for id in individual):
             return (0.0, )
-        
+    
+        # Obtém as avaliações dos filmes
         ratings_movies = RatingsRepository.find_by_movieid_list(self.db, individual)
 
-        if len(ratings_movies) > 0:
-            mean_ = np.mean([obj_.rating for obj_ in ratings_movies])
+        if ratings_movies:
+        # Calcula a média das avaliações
+            mean_rating = np.mean([obj.rating for obj in ratings_movies])
         else:
-            mean_ = 0.0
+            mean_rating = 0.0
 
-        return (mean_, )
+        return (mean_rating, )
 
